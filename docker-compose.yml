@@ -1,0 +1,23 @@
+services:
+
+  app:
+    image: gitlab.cyber-demo.com:5050/jdoe/cyber-demo:latest
+    container_name: app
+    build: 
+      context: .
+      dockerfile: Dockerfile
+  
+  caddy:
+    image: caddy:latest
+    container_name: caddy
+    ports:
+      - 80:80
+      - 443:443
+    command: caddy reverse-proxy --from cyber-demo.com --to http://app
+
+  watchtower:
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /home/ubuntu/.docker/config.json:/config.json
+    command: --interval 60
